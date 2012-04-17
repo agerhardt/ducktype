@@ -32,12 +32,8 @@ public class Ducktype {
 	public static <D> D adapt(Class<D> ducktypeClass, Object ... implementingObjects) {
 		check(ducktypeClass, implementingObjects);
 		checkForMissingMethods(ducktypeClass, implementingObjects);
-		if (implementingObjects.length == 1) {
-			if (ducktypeClass.isAssignableFrom(implementingObjects[0].getClass())) {
-				return (D) implementingObjects[0];
-			} else {
-				return DuckProxy.createProxy(ducktypeClass, implementingObjects[0]);
-			}
+		if (implementingObjects.length == 1 && ducktypeClass.isAssignableFrom(implementingObjects[0].getClass())) {
+			return (D) implementingObjects[0];
 		} else {
 			return FrankenDuckProxy.createProxy(ducktypeClass, implementingObjects);
 		}
@@ -70,32 +66,6 @@ public class Ducktype {
 			}
 		}
 		return true;
-	}
-	
-	private static class DuckProxy implements InvocationHandler {
-
-		private final Object targetObject;
-		private final Class<?> targetClass;
-		
-		private DuckProxy(Object targetObject) {
-			this.targetObject = targetObject;
-			this.targetClass = targetObject.getClass();
-		}
-		
-		@SuppressWarnings("unchecked")
-		public static <D> D createProxy(Class<D> ducktypeClass, Object targetObject) {
-			Class<?>[] interfaces = new Class<?>[] { ducktypeClass };
-			ClassLoader classLoader = ducktypeClass.getClassLoader();
-			DuckProxy handler = new DuckProxy(targetObject);
-			return (D) Proxy.newProxyInstance(classLoader, interfaces, handler); 
-		}
-		
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
-			Method objectMethod = targetClass.getMethod(method.getName(), method.getParameterTypes());
-			return objectMethod.invoke(targetObject, args);
-		}
 	}
 	
 	private static class FrankenDuckProxy implements InvocationHandler {
