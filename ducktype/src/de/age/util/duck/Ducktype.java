@@ -13,7 +13,8 @@ public class Ducktype {
 		checkObjectList(implementingObjects);
 		try {
 			checkForMissingMethods(ducktypeClass, implementingObjects);
-		} catch (MissingMethodException exc) {
+			checkForAmbiguousMethods(ducktypeClass, implementingObjects);
+		} catch (MissingMethodException | AmbiguousMethodException exc) {
 			return false;
 		}
 		return true;
@@ -27,11 +28,24 @@ public class Ducktype {
 			}
 		}
 	}
+	
+	private static void checkForAmbiguousMethods(Class<?> ducktypeClass,
+			Object ... implementingObjects) {
+		if (implementingObjects.length == 1) {
+			return;
+		}
+		for (Method method : ducktypeClass.getMethods()) {
+			if (methodIsAmbiguous(method, implementingObjects)) {
+				throw new AmbiguousMethodException(method);
+			}
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <D> D adapt(Class<D> ducktypeClass, Object ... implementingObjects) {
 		check(ducktypeClass, implementingObjects);
 		checkForMissingMethods(ducktypeClass, implementingObjects);
+		checkForAmbiguousMethods(ducktypeClass, implementingObjects);
 		if (implementingObjects.length == 1 && ducktypeClass.isAssignableFrom(implementingObjects[0].getClass())) {
 			return (D) implementingObjects[0];
 		} else {
@@ -66,6 +80,24 @@ public class Ducktype {
 			}
 		}
 		return true;
+	}
+
+	private static boolean methodIsAmbiguous(Method method,	Object[] implementingObjects) {
+		boolean methodFound = false;
+		for (Object o : implementingObjects) {
+			Class<? extends Object> objectClass = o.getClass();
+			try {
+				objectClass.getMethod(method.getName(), method.getParameterTypes());
+				if (methodFound) {
+					return true;
+				} else {
+					methodFound = true;
+				}
+			} catch (SecurityException e) {
+			} catch (NoSuchMethodException e) {
+			}
+		}
+		return false;
 	}
 	
 	private static class FrankenDuckProxy implements InvocationHandler {

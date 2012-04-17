@@ -63,4 +63,14 @@ public class FrankenDucktypeAdaptTest {
 		Ducktype.adapt(SimpleDuckIF.class, frankenMocks);
 	}
 	
+	@Test(expected=AmbiguousMethodException.class)
+	public void adaptThrowsExceptionWhenMethodsAreAmbiguous() {
+		Object[] frankenMocks = new Object[4];
+		frankenMocks[0] = EasyMock.createMock(DuckQuackIF.class);
+		frankenMocks[1] = EasyMock.createMock(DuckWaddleIF.class);
+		frankenMocks[2] = EasyMock.createMock(DuckNameIF.class);
+		frankenMocks[3] = EasyMock.createMock(DuckNameIF.class);
+		Ducktype.adapt(SimpleDuckIF.class, frankenMocks);
+	}
+	
 }
