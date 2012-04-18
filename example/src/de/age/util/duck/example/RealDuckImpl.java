@@ -1,4 +1,4 @@
-package de.age.util.duck.example.simple;
+package de.age.util.duck.example;
 
 public class RealDuckImpl implements DuckIF {
 

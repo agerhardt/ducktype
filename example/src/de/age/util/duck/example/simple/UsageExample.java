@@ -1,6 +1,9 @@
 package de.age.util.duck.example.simple;
 
 import de.age.util.duck.Ducktype;
+import de.age.util.duck.example.DuckIF;
+import de.age.util.duck.example.FakeDuckImpl;
+import de.age.util.duck.example.RealDuckImpl;
 
 public class UsageExample {
 
