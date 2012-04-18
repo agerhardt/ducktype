@@ -1,4 +1,4 @@
-package de.age.util.duck.example.aspectoriented.withoutducktyping;
+package de.age.util.duck.example.aspectoriented.withoutDucktyping;
 
 
 public class RealDuckWaddler implements DuckWaddleIF {
