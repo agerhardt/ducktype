@@ -69,14 +69,39 @@ public class Ducktype {
 	
 	private static boolean objectsAreLackingMethod(Method method, Object ... implementingObjects) {
 		for (Object o : implementingObjects) {
-			Class<? extends Object> objectClass = o.getClass();
-			try {
-				Method objectMethod = objectClass.getMethod(method.getName(), method.getParameterTypes());
-				if (method.getReturnType().isAssignableFrom(objectMethod.getReturnType())) {
-					return false;
-				}
-			} catch (SecurityException e) {
-			} catch (NoSuchMethodException e) {
+			if (hasMethod(o, method)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean hasMethod(Object o, Method method) {
+		Class<? extends Object> objectClass = o.getClass();
+		for (Method objectMethod : objectClass.getMethods()) {
+			if (methodsAreMatching(method, objectMethod)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean methodsAreMatching(Method declaredMethod, Method callerMethod) {
+		Class<?>[] declaredParams = callerMethod.getParameterTypes();
+		Class<?>[] callerParams = declaredMethod.getParameterTypes();
+		return callerMethod.getName().equals(declaredMethod.getName())
+				&& paramsMatching(declaredParams, callerParams)
+				&& declaredMethod.getReturnType().isAssignableFrom(
+						callerMethod.getReturnType());
+	}
+
+	private static boolean paramsMatching(Class<?>[] declaredParams, Class<?>[] callerParams) {
+		if (declaredParams.length != callerParams.length) {
+			return false;
+		}
+		for (int i = 0; i < callerParams.length; i++) {
+			if (!declaredParams[i].isAssignableFrom(callerParams[i])) {
+				return false;
 			}
 		}
 		return true;
