@@ -2,6 +2,7 @@ package de.age.util.duck;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -29,6 +30,16 @@ public class PolymorphTypeCheckTest {
 	@Test
 	public void moreSpecificReturnTypeIsAllowed() {
 		assertThat(Ducktype.check(SimpleDuckIF.class, new NumberDuck()), is(true));
+	}
+	
+	@Test
+	public void moreGeneralArgumentTypeGetsCalled() {
+		fail();
+	}
+	
+	@Test
+	public void moreSpecificArgumentTypeGetsCalled() {
+		fail();
 	}
 
 }
