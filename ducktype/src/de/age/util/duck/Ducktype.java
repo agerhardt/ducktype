@@ -72,7 +72,7 @@ public class Ducktype {
 			Class<? extends Object> objectClass = o.getClass();
 			try {
 				Method objectMethod = objectClass.getMethod(method.getName(), method.getParameterTypes());
-				if (objectMethod.getReturnType().equals(method.getReturnType())) {
+				if (method.getReturnType().isAssignableFrom(objectMethod.getReturnType())) {
 					return false;
 				}
 			} catch (SecurityException e) {
