@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class FrankenDuckProxy implements InvocationHandler {
+class FrankenDuckProxy implements InvocationHandler {
 
 	private final Object[] targetObjects;
 	
