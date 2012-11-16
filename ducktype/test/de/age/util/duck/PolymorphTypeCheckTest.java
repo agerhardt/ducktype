@@ -2,8 +2,8 @@ package de.age.util.duck;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 public class PolymorphTypeCheckTest {
@@ -12,9 +12,17 @@ public class PolymorphTypeCheckTest {
 		Number quack(String quackedMessage);
 	}
 	
+	private static interface ObjectDuckIF {
+		Number quack(Object quackedObject);
+	}
+	
 	private static class ObjectDuck {
 		@SuppressWarnings("unused")
 		public Number quack(Object quackedObject) {return null;};
+	}
+	
+	private static interface NumberDuckIF {
+		public Integer quack(String quackedMessage);
 	}
 	
 	private static class NumberDuck {
@@ -34,12 +42,22 @@ public class PolymorphTypeCheckTest {
 	
 	@Test
 	public void moreGeneralArgumentTypeGetsCalled() {
-		fail();
+		ObjectDuckIF mock = EasyMock.createMock(ObjectDuckIF.class);
+		SimpleDuckIF duck = Ducktype.adapt(SimpleDuckIF.class, mock);
+		EasyMock.expect(mock.quack("QUACK")).andReturn(null);
+		EasyMock.replay(mock);
+		duck.quack("QUACK");
+		EasyMock.verify(mock);
 	}
 	
 	@Test
 	public void moreSpecificArgumentTypeGetsCalled() {
-		fail();
+		NumberDuckIF mock = EasyMock.createMock(NumberDuckIF.class);
+		SimpleDuckIF duck = Ducktype.adapt(SimpleDuckIF.class, mock);
+		EasyMock.expect(mock.quack("QUACK")).andReturn(null);
+		EasyMock.replay(mock);
+		duck.quack("QUACK");
+		EasyMock.verify(mock);
 	}
 
 }
