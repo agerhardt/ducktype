@@ -6,31 +6,25 @@ import java.lang.reflect.Proxy;
 
 class FrankenDuckProxy implements InvocationHandler {
 
-	private final Object[] targetObjects;
+	private final MethodMappingInfo mapping;
 	
-	private FrankenDuckProxy(Object ... targetObjects) {
-		this.targetObjects = targetObjects;
+	private FrankenDuckProxy(MethodMappingInfo mapping) {
+		this.mapping = mapping;
 	}
 	
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
-		for (Object possibleTarget : targetObjects) {
-			try {
-				Method targetMethod = possibleTarget.getClass().getMethod(method.getName(), method.getParameterTypes());
-				return targetMethod.invoke(possibleTarget, args);
-			} catch (NoSuchMethodException exc) {
-				continue;
-			}
-		}
-		throw new MissingMethodException(method);
+		CallTarget target = mapping.getTarget(method);
+		Method targetMethod = target.getTargetMethod();
+		return targetMethod.invoke(target.getTargetObject(), args);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <D> D createProxy(Class<D> ducktypeClass, Object ... targetObjects) {
 		Class<?>[] interfaces = new Class<?>[] { ducktypeClass };
 		ClassLoader classLoader = ducktypeClass.getClassLoader();
-		FrankenDuckProxy handler = new FrankenDuckProxy(targetObjects);
+		FrankenDuckProxy handler = new FrankenDuckProxy(MethodMappingInfo.determineMapping(ducktypeClass, targetObjects));
 		return (D) Proxy.newProxyInstance(classLoader, interfaces, handler); 
 	}
 	
