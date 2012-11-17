@@ -3,6 +3,7 @@ package de.age.util.duck;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 class MethodMappingInfo {
 	
@@ -46,8 +47,8 @@ class MethodMappingInfo {
 	}
 
 	private static boolean methodsAreMatching(Method declaredMethod, Method callerMethod) {
-		Class<?>[] declaredParams = callerMethod.getParameterTypes();
-		Class<?>[] callerParams = declaredMethod.getParameterTypes();
+		Class<?>[] declaredParams = declaredMethod.getParameterTypes();
+		Class<?>[] callerParams = callerMethod.getParameterTypes();
 		return callerMethod.getName().equals(declaredMethod.getName())
 				&& paramsMatching(declaredParams, callerParams)
 				&& declaredMethod.getReturnType().isAssignableFrom(
@@ -59,7 +60,7 @@ class MethodMappingInfo {
 			return false;
 		}
 		for (int i = 0; i < callerParams.length; i++) {
-			if (!declaredParams[i].isAssignableFrom(callerParams[i])) {
+			if (!callerParams[i].isAssignableFrom(declaredParams[i])) {
 				return false;
 			}
 		}
@@ -68,6 +69,26 @@ class MethodMappingInfo {
 
 	CallTarget getTarget(Method declaredMethod) {
 		return mapping.get(declaredMethod);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[");
+		boolean firstEntry = true;
+		for (Entry<Method, CallTarget> entry : mapping.entrySet()) {
+			if (!firstEntry) {
+				builder.append(", ");
+			} else {
+				firstEntry = false;
+			}
+			builder.append(entry.getKey().getName())
+					.append(" -> ")
+					.append(entry.getValue().getTargetObject().getClass()
+							.getSimpleName()).append("::")
+					.append(entry.getValue().getTargetMethod().getName());
+		}
+		builder.append("]");
+		return builder.toString();
 	}
 
 }
