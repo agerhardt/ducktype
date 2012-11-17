@@ -13,7 +13,7 @@ public class GenericTypeCheckTest {
 	
 	private static class GenericDuck<T, U> {
 		@SuppressWarnings("unused")
-		T quack(U someArgument) {return null;}
+		public T quack(U someArgument) {return null;}
 	}
 	
 	@Test
