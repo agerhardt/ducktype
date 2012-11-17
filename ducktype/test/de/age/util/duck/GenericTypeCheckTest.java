@@ -21,6 +21,11 @@ public class GenericTypeCheckTest {
 		public T quack(Number numberOfQuacks) {return null;}
 	}
 	
+	private static class SubtypedGenericDuck<T extends Double> {
+		@SuppressWarnings("unused")
+		public T quack(Number numberOfQuacks) {return null;}
+	}
+	
 	@Test
 	public void exactMatchingTypesMatch() {
 		assertThat(Ducktype.check(SimpleDuckIF.class, new GenericDuck<Number, Number>()), is(true));
@@ -29,5 +34,10 @@ public class GenericTypeCheckTest {
 	@Test
 	public void illegalGenericReturnTypeNotAllowed() {
 		assertThat(Ducktype.check(SimpleDuckIF.class, new IllegalGenericDuck<String>()), is(false));
+	}
+	
+	@Test
+	public void subtypedGenericReturnTypeMatch() {
+		assertThat(Ducktype.check(SimpleDuckIF.class, new SubtypedGenericDuck<Double>()), is(true));
 	}
 }

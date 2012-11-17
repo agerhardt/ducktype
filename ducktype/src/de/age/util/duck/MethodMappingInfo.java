@@ -58,7 +58,10 @@ class MethodMappingInfo {
 		if (callerMethod.getGenericReturnType().equals(callerMethod.getReturnType())) {
 			return declaredMethod.getReturnType().isAssignableFrom(callerMethod.getReturnType());
 		} else {
-			return callerMethod.getReturnType().isAssignableFrom(declaredMethod.getReturnType());
+			return callerMethod.getReturnType().isAssignableFrom(
+					declaredMethod.getReturnType())
+					|| declaredMethod.getReturnType().isAssignableFrom(
+							callerMethod.getReturnType());
 		}
 	}
 
