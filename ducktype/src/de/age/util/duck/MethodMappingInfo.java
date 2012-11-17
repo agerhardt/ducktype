@@ -51,8 +51,11 @@ class MethodMappingInfo {
 		Class<?>[] callerParams = callerMethod.getParameterTypes();
 		return callerMethod.getName().equals(declaredMethod.getName())
 				&& paramsMatching(declaredParams, callerParams)
-				&& declaredMethod.getReturnType().isAssignableFrom(
-						callerMethod.getReturnType());
+				&& returnTypesMatch(declaredMethod, callerMethod);
+	}
+
+	private static boolean returnTypesMatch(Method declaredMethod, Method callerMethod) {
+		return declaredMethod.getReturnType().isAssignableFrom(callerMethod.getReturnType());
 	}
 
 	private static boolean paramsMatching(Class<?>[] declaredParams, Class<?>[] callerParams) {
