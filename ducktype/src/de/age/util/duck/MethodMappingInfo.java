@@ -55,7 +55,14 @@ class MethodMappingInfo {
 	}
 
 	private static boolean returnTypesMatch(Method declaredMethod, Method callerMethod) {
-		return declaredMethod.getReturnType().isAssignableFrom(callerMethod.getReturnType());
+		if (callerMethod.getGenericReturnType().equals(callerMethod.getReturnType())) {
+			return declaredMethod.getReturnType().isAssignableFrom(callerMethod.getReturnType());
+		} else {
+			return callerMethod.getReturnType().isAssignableFrom(
+					declaredMethod.getReturnType())
+					|| declaredMethod.getReturnType().isAssignableFrom(
+							callerMethod.getReturnType());
+		}
 	}
 
 	private static boolean paramsMatching(Class<?>[] declaredParams, Class<?>[] callerParams) {
